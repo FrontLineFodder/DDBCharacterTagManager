@@ -3,7 +3,7 @@
 // @namespace   DnDBeyond Tag Manager
 // @match       https://www.dndbeyond.com/characters
 // @grant       none
-// @version     1.0
+// @version     1.0.1
 // @author      Adam Mellor
 // @description DnDBeyond Character Tag Manager script for Violentmonkey
 // @homepage    https://github.com/FrontLineFodder/DDBCharacterTagManager
@@ -459,7 +459,7 @@ function init() {
 
   let characterTagSet = new Map() ;
   var characterTagSetData = localStorage.DnDBeyond_CharacterMgmt_CharacterTagSet || null
-  if ( characterTagSetData ) { let characterTagSet = new Map( JSON.parse( characterTagSetData ) ) ; }
+  if ( characterTagSetData ) { characterTagSet = new Map( JSON.parse( characterTagSetData ) ) ; }
 
   function waitForElm(selector) {
     return new Promise(resolve => {
