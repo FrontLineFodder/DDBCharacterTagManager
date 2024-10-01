@@ -7,7 +7,7 @@
 // @author      Adam Mellor
 // @description DnDBeyond Character Tag Manager script for Violentmonkey
 // @homepage    https://github.com/FrontLineFodder/DDBCharacterTagManager
-// @downloadURL https://github.com/FrontLineFodder/DDBCharacterTagManager/raw/main/DDBCharacterTagManager.js
+// @downloadURL https://github.com/FrontLineFodder/DDBCharacterTagManager/raw/Dev/DDBCharacterTagManager.js
 // ==/UserScript==
 
 (function() {
