@@ -3,7 +3,7 @@
 // @namespace   DnDBeyond Tag Manager
 // @match       https://www.dndbeyond.com/characters
 // @grant       none
-// @version     2.0.0
+// @version     2.0.1
 // @author      Adam Mellor
 // @description DnDBeyond Character Tag Manager script for Violentmonkey
 // @homepage    https://github.com/FrontLineFodder/DDBCharacterTagManager
@@ -424,13 +424,13 @@ const oldToggleState = new Map();
 // Get current sidebar tag states
 sidebarTagList.querySelectorAll("li").forEach((tag) => {
   const hiddenState = tag.classList.contains('tagHidden');
-  const tagState = { name: tag.innerText, hidden: hiddenState };
-  oldToggleState.set(tag.innerText, tagState);
+  const tagState = { name: tag.innerText.trim(), hidden: hiddenState };
+  oldToggleState.set(tag.innerText.trim(), tagState);
 });
 
 // Update newCharacterTagSet based on settingsTagList
 settingsTagList.querySelectorAll("li.tagListItem").forEach((tag) => {
-  const tagName = tag.childNodes[0].textContent;
+  const tagName = tag.childNodes[0].textContent.trim();;
 
   // Use old state if it exists, otherwise default to visible
   if (oldToggleState.has(tagName)) {
@@ -559,13 +559,13 @@ closeButton.addEventListener("click", () => tagSelectionPopupElement.remove());
 const characterCardHeader = character.querySelector(".ddb-campaigns-character-card-header-upper");
 const characterCardAnchor = characterCardHeader.querySelector("a");
 const characterCardInfo = character.querySelector(".ddb-campaigns-character-card-header-upper-character-info");
-const characterName = characterCardInfo.querySelector("h2").innerText;
+const characterName = characterCardInfo.querySelector("h2").innerText.trim();;
 const characterPathName = characterCardAnchor.pathname;
 
 const characterTagList = document.getElementById("characterTagList");
 characterTagList.addEventListener("click", (event) => {
   if (event.target.classList.contains("tagListItem")) {
-    const tagName = event.target.childNodes[0].textContent;
+    const tagName = event.target.childNodes[0].textContent.trim();;
 
     if (tagName === "Untagged") {
       characterTags.delete(characterPathName);
