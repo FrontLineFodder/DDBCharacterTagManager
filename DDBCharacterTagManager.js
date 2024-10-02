@@ -261,7 +261,7 @@ function toggleSidebar() {
   const sidebarTagManager = document.getElementById('sidebarTagManager');
   if (sidebarTagManager) {
       sidebarTagManager.classList.toggle('collapsed-TagManager');
-        updateWindowsSize();
+      updateWindowsSize();
   }
 }
 
@@ -650,15 +650,47 @@ characterSelection.forEach((character) => {
     characterCardFooter.insertBefore(characterTagButtonDiv, characterCardFooter.childNodes[3]);
   }
 });
+}
 
-// Add click event listener to character listing body
-const characterListingBody = document.querySelector("div.ddb-characters-listing-body");
-characterListingBody.addEventListener("click", (event) => {
-  if (event.target.classList.contains("characterTagButton")) {
-    const character = event.target.closest("li.ddb-campaigns-character-card-wrapper.j-characters-listing__item");
-    displayCharacterTagSelection(character);
+// Add Listener to trigger display of a character tag selection
+function addCharacterTagListener() {
+  // Add click event listener to character listing body
+  const characterListingBody = document.querySelector("div.ddb-characters-listing-body");
+  characterListingBody.addEventListener("click", (event) => {
+    if (event.target.classList.contains("characterTagButton")) {
+      const character = event.target.closest("li.ddb-campaigns-character-card-wrapper.j-characters-listing__item");
+      displayCharacterTagSelection(character);
+    }
+  });
+}
+
+// Throttle function to limit the rate at which a function is executed
+function throttle(func, delay) {
+  let timeoutId;   // Scoped within the function, specific to the throttled function instance
+
+  return function(...args) {
+    // Clear the existing timeout to reset the delay
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
+
+    // Set the timeout to ensure the function runs after the delay
+    timeoutId = setTimeout(() => {
+      func(...args);
+    }, delay);
+  };
+}
+
+// Function to watch for changes on the #search element
+function watchSearchElement() {
+  const searchElement = document.getElementById('search');
+
+  if (searchElement) {
+    searchElement.addEventListener('input', throttledAddCharacterTagButtons);
+    searchElement.addEventListener('change', throttledAddCharacterTagButtons);
+  } else {
+    console.error('Search element with id "#search" not found.');
   }
-});
 }
 
 function sidebarTagListPopulate() {
@@ -835,6 +867,12 @@ window.addEventListener('resize', updateWindowsSize);
 addCharacterTagButtons();
 sidebarTagListPopulate();
 
+// Add Listener to trigger display of a character tag selection
+addCharacterTagListener()
+
+// Call the watchSearchElement function to initialize the listener
+watchSearchElement();
+
 // Initial call to set max-height on page load
 updateWindowsSize();
 
@@ -876,6 +914,9 @@ const characterTagSetData = localStorage.getItem('DnDBeyond_CharacterMgmt_Charac
 if (characterTagSetData) {
 characterTagSet = new Map(JSON.parse(characterTagSetData));
 }
+
+// Throttled version of addCharacterTagButtons with 500ms delay
+const throttledAddCharacterTagButtons = throttle(addCharacterTagButtons, 750);
 
 waitForElm("#character-tools-target > div > div > div > div.styles_searchSort__-7qBD > button")
 .then((elm) => {
