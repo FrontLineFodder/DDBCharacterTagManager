@@ -3,7 +3,7 @@
 // @namespace   DnDBeyond Tag Manager
 // @match       https://www.dndbeyond.com/characters
 // @grant       none
-// @version     2.0.1
+// @version     2.0.2
 // @author      Adam Mellor
 // @description DnDBeyond Character Tag Manager script for Violentmonkey
 // @homepage    https://github.com/FrontLineFodder/DDBCharacterTagManager
