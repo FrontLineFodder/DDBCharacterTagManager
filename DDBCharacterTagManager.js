@@ -3,15 +3,19 @@
 // @namespace   DnDBeyond Tag Manager
 // @match       https://www.dndbeyond.com/characters
 // @grant       none
-// @version     2.0.2
+// @version     2.0.3
 // @author      Adam Mellor
 // @description DnDBeyond Character Tag Manager script for Violentmonkey
 // @homepage    https://github.com/FrontLineFodder/DDBCharacterTagManager
 // @downloadURL https://github.com/FrontLineFodder/DDBCharacterTagManager/raw/Dev/DDBCharacterTagManager.js
 // ==/UserScript==
 
+
 (function() {
   'use strict';
+
+// Track the party mode state
+let isPartyTime = false;
 
 // Function to check if the style with id 'styleTagManager' exists, and add it if it's missing
 function ensureStyleTagManager() {
@@ -42,7 +46,7 @@ function ensureStyleTagManager() {
 
       .sidebar-TagManager.container-TagManager {
           position: fixed !important;
-          top: 120px;
+          top: 0px;
           right: 0;
       }
 
@@ -237,6 +241,43 @@ function ensureSidebarTagManager() {
       sidebarContent.classList.add('sidebarContent-TagManager');
       sidebarTagManager.appendChild(sidebarContent);
 
+      const imageContainer = document.createElement('div');
+      imageContainer.style.width = '120px';  // Container width (image + border)
+      imageContainer.style.height = '120px'; // Container height (image + border)
+      imageContainer.style.margin = '0px auto'; // Center the container
+
+      // Create the Dancing Wizard image element
+      const imageElement = document.createElement('img');
+      imageElement.id = 'partyTimeImage';
+      imageElement.src = 'https://media.dndbeyond.com/mega-menu/5188e9cd133362e349708cd3c859a6d2.gif';
+
+      // Apply styling
+      imageElement.style.display = 'none'; // Hidden initially
+      imageElement.style.margin = '0px auto'; // Centers the image horizontally
+      imageElement.style.height = '60px';   // Set the height to 60px
+
+      // Show the image on mouseover
+      imageContainer.addEventListener('mouseover', () => {
+        if ( ! imageElement.className.includes( 'party-time-enabled' ) ) {
+          imageElement.style.display = 'block'; // Show the image on hover
+        }
+      });
+
+      // Show the image on mouseover
+      imageContainer.addEventListener('mouseout', () => {
+        if ( ! imageElement.className.includes( 'party-time-enabled' ) ) {
+          imageElement.style.display = 'none'; // Show the image on hover
+        }
+      });
+
+      imageElement.addEventListener('click', () => {
+        togglePartyTime()
+      });
+
+      // Add the image to the container
+      imageContainer.appendChild(imageElement);
+      sidebarContent.appendChild(imageContainer);
+
       // Add heading to the sidebar content
       const heading = document.createElement('h2');
       heading.textContent = 'Tag Manager';
@@ -254,6 +295,25 @@ function ensureSidebarTagManager() {
   } else {
       console.log("Sidebar 'sidebarTagManager' already exists.");
   }
+}
+
+// Function to toggle party time on and off
+function togglePartyTime() {
+  // Toggle the 'party-time-enabled' class
+  partyTimeImage.classList.toggle('party-time-enabled');
+
+  // Toggle the state of isPartyTime
+  isPartyTime = !isPartyTime;
+
+  // Toggle the visibility of the image on click
+  partyTimeImage.style.display = isPartyTime
+    ? 'block' // Show the image for Party Time
+    : 'none'; // Hide the image for sad time
+
+  // Update the button's title based on the new state
+  partyTimeImage.title = isPartyTime
+      ? "It's party time! (click to disable)"
+      : "Click to enable party time! (flashing color warning)";
 }
 
 // Function to toggle the sidebar
@@ -922,5 +982,7 @@ waitForElm("#character-tools-target > div > div > div > div.styles_searchSort__-
 .then((elm) => {
   init();
 });
+
+partyTimeImage = document.getElementById('partyTimeImage');
 
 })();
