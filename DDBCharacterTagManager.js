@@ -3,7 +3,7 @@
 // @namespace   DnDBeyond Tag Manager
 // @match       https://www.dndbeyond.com/characters
 // @grant       none
-// @version     2.0.3
+// @version     2.0.4
 // @author      Adam Mellor
 // @description DnDBeyond Character Tag Manager script for Violentmonkey
 // @homepage    https://github.com/FrontLineFodder/DDBCharacterTagManager
@@ -73,6 +73,9 @@ function ensureStyleTagManager() {
           align-items: center;
           height: 100vh;
       }
+      .vertical-text:hover {
+          background-color: var(--color-primary--dark);
+      }
 
       /* Button to toggle the sidebar */
       #toggleButton {
@@ -132,12 +135,19 @@ function ensureStyleTagManager() {
           display: flex;
           justify-content: space-between;
           user-select: none;
-          border: solid #374045;
+          border: solid;
+          border-color: var( --color-primary--main)
       }
       .tagHidden {
           background: bottom;
           opacity: 50%;
-          border: solid #ed6c02;
+          border: solid;
+      }
+      .tagListItem:hover {
+          border-color: var(--color-rarity--legendary);
+      }
+      .tagCurrent {
+          border-color: var(--color-rarity--artifact);
       }
       .characterHidden {
           display: none;
@@ -192,8 +202,6 @@ function ensureStyleTagManager() {
           line-height: 24px;
       }
       .characterTagButtonSpan {
-          border: solid var(--color-primary--main);
-          border-radius: 6px;
           color: var(--color-primary--main);
           padding: 4px;
       }
@@ -201,7 +209,6 @@ function ensureStyleTagManager() {
           display: inline-flex;
           align-items: center;
           justify-content: center;
-          border-radius: 50%;
           padding: 5px;
           font-size: 1.125rem;
           background-color: transparent;
@@ -622,6 +629,8 @@ const characterCardInfo = character.querySelector(".ddb-campaigns-character-card
 const characterName = characterCardInfo.querySelector("h2").innerText.trim();;
 const characterPathName = characterCardAnchor.pathname;
 
+const characterCurrentTag = characterTags.has(characterPathName) ? characterTags.get(characterPathName) : 'Untagged' ;
+
 const characterTagList = document.getElementById("characterTagList");
 characterTagList.addEventListener("click", (event) => {
   if (event.target.classList.contains("tagListItem")) {
@@ -638,7 +647,7 @@ characterTagList.addEventListener("click", (event) => {
   }
 });
 
-tagSelectionPopulate();
+tagSelectionPopulate(characterCurrentTag);
 }
 
 function updateCharacterState(character, characterPathName, tagName) {
@@ -669,13 +678,16 @@ if (shouldHide && !isCharacterHidden) {
 }
 }
 
-function tagSelectionPopulate() {
+function tagSelectionPopulate(characterCurrentTag) {
 const characterTagList = document.getElementById("characterTagList");
 characterTagList.innerHTML = ''; // Clear the list before populating
 
 // Add "Untagged" as the first option
 const untaggedItem = document.createElement('li');
 untaggedItem.classList.add('tagListItem', 'tagSelect');
+if ( characterCurrentTag === 'Untagged' ) {
+  untaggedItem.classList.add('tagCurrent');
+}
 untaggedItem.textContent = 'Untagged';
 characterTagList.appendChild(untaggedItem);
 
@@ -684,6 +696,9 @@ characterTagSet.forEach((tagState) => {
   if (tagState.name !== 'Untagged') {
     const tagItem = document.createElement('li');
     tagItem.classList.add('tagListItem', 'tagSelect');
+    if ( characterCurrentTag === tagState.name ) {
+      tagItem.classList.add('tagCurrent');
+    }
     tagItem.textContent = tagState.name;
     characterTagList.appendChild(tagItem);
   }
