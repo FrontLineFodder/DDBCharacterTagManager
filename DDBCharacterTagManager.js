@@ -7,7 +7,7 @@
 // @author      Adam Mellor
 // @description DnDBeyond Character Tag Manager script for Violentmonkey
 // @homepage    https://github.com/FrontLineFodder/DDBCharacterTagManager
-// @downloadURL https://github.com/FrontLineFodder/DDBCharacterTagManager/raw/Dev/DDBCharacterTagManager.js
+// @downloadURL https://github.com/FrontLineFodder/DDBCharacterTagManager/raw/main/DDBCharacterTagManager.js
 // ==/UserScript==
 
 
@@ -48,6 +48,7 @@ function ensureStyleTagManager() {
           position: fixed !important;
           top: 0px;
           right: 0;
+          max-width: 100%;
       }
 
       /* Collapsed sidebar */
@@ -64,9 +65,9 @@ function ensureStyleTagManager() {
       /* Vertical text block */
       .vertical-text {
           writing-mode: vertical-lr;
-          background-color: var(--color-primary--main);
+          background-color: var(--color-megamenu--main);
           color: white;
-          padding: 0;
+          padding: 10px;
           font-size: 1.2em;
           display: flex;
           justify-content: center;
@@ -74,7 +75,7 @@ function ensureStyleTagManager() {
           height: 100vh;
       }
       .vertical-text:hover {
-          background-color: var(--color-primary--dark);
+          background-color: var(--color-megamenu--dark);;
       }
 
       /* Button to toggle the sidebar */
@@ -94,21 +95,6 @@ function ensureStyleTagManager() {
 
       #toggleButton:hover {
           background-color: #45a049;
-      }
-
-      /* Responsive behavior for smaller screens */
-      @media (max-width: 768px) {
-          .sidebar-TagManager {
-              width: 100%;
-              height: auto;
-              bottom: 0;
-              right: 0;
-              top: unset;
-          }
-
-          .sidebar-TagManager.collapsed-TagManager {
-              width: 60px;
-          }
       }
 
       /* Styles for tagList and its items */
@@ -215,6 +201,23 @@ function ensureStyleTagManager() {
           cursor: pointer;
           color: rgba(18, 24, 28, 0.64);
       }
+
+      /* Responsive behavior for smaller screens */
+      @media (max-width: 1023px) {
+          .sidebar-TagManager {
+          }
+          #partyTimeContainer {
+            height: 20px;
+          }
+
+          .sidebar-TagManager.collapsed-TagManager {
+              width: 60px;
+          }
+          .tagInput, .tagListItem, .removeItem {
+            padding: 6px;
+            font-size: 1.5rem;
+          }
+      }
       `;
       // Append the style element to the head of the document
       document.head.appendChild(style);
@@ -248,42 +251,43 @@ function ensureSidebarTagManager() {
       sidebarContent.classList.add('sidebarContent-TagManager');
       sidebarTagManager.appendChild(sidebarContent);
 
-      const imageContainer = document.createElement('div');
-      imageContainer.style.width = '120px';  // Container width (image + border)
-      imageContainer.style.height = '120px'; // Container height (image + border)
-      imageContainer.style.margin = '0px auto'; // Center the container
+      const partyTimeContainer = document.createElement('div');
+      partyTimeContainer.id = 'partyTimeContainer';
+      partyTimeContainer.style.width = '120px';  // Container width (image + border)
+      partyTimeContainer.style.height = '120px'; // Container height (image + border)
+      partyTimeContainer.style.margin = '0px auto'; // Center the container
 
       // Create the Dancing Wizard image element
-      const imageElement = document.createElement('img');
-      imageElement.id = 'partyTimeImage';
-      imageElement.src = 'https://media.dndbeyond.com/mega-menu/5188e9cd133362e349708cd3c859a6d2.gif';
+      const partyTimeImage = document.createElement('img');
+      partyTimeImage.id = 'partyTimeImage';
+      partyTimeImage.src = 'https://media.dndbeyond.com/mega-menu/5188e9cd133362e349708cd3c859a6d2.gif';
 
       // Apply styling
-      imageElement.style.display = 'none'; // Hidden initially
-      imageElement.style.margin = '0px auto'; // Centers the image horizontally
-      imageElement.style.height = '60px';   // Set the height to 60px
+      partyTimeImage.style.display = 'none'; // Hidden initially
+      partyTimeImage.style.margin = '0px auto'; // Centers the image horizontally
+      partyTimeImage.style.height = '60px';   // Set the height to 60px
 
       // Show the image on mouseover
-      imageContainer.addEventListener('mouseover', () => {
-        if ( ! imageElement.className.includes( 'party-time-enabled' ) ) {
-          imageElement.style.display = 'block'; // Show the image on hover
+      partyTimeContainer.addEventListener('mouseover', () => {
+        if ( ! partyTimeImage.className.includes( 'party-time-enabled' ) ) {
+          partyTimeImage.style.display = 'block'; // Show the image on hover
         }
       });
 
       // Show the image on mouseover
-      imageContainer.addEventListener('mouseout', () => {
-        if ( ! imageElement.className.includes( 'party-time-enabled' ) ) {
-          imageElement.style.display = 'none'; // Show the image on hover
+      partyTimeContainer.addEventListener('mouseout', () => {
+        if ( ! partyTimeImage.className.includes( 'party-time-enabled' ) ) {
+          partyTimeImage.style.display = 'none'; // Show the image on hover
         }
       });
 
-      imageElement.addEventListener('click', () => {
+      partyTimeImage.addEventListener('click', () => {
         togglePartyTime()
       });
 
       // Add the image to the container
-      imageContainer.appendChild(imageElement);
-      sidebarContent.appendChild(imageContainer);
+      partyTimeContainer.appendChild(partyTimeImage);
+      sidebarContent.appendChild(partyTimeContainer);
 
       // Add heading to the sidebar content
       const heading = document.createElement('h2');
@@ -369,7 +373,7 @@ function createTagManagerToggleButton() {
 function displayCharacterTagSettings() {
 const tagSettingsPopup = `
   <div class="characterTagSettingsBackground" style="opacity: 1; transition: opacity 225ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;"></div>
-  <div class="characterTagSettingsPopup" tabindex="-1" style="max-width: 50%; max-height: 900px; padding: 0px 16px;">
+  <div class="characterTagSettingsPopup" tabindex="-1" style="max-width: 80%; max-height: 900px; padding: 0px 16px;">
     <div class="characterTagSettingsHeader" style="padding: 16px; border-bottom: 1px solid rgb(162, 172, 178);">
       <svg height="1em" style="color: rgba(0, 0, 0, 0.54); margin-right: 5px; height: 35px; width: 35px;" viewBox="0 0 512 512">
         <path d="M0 252.1V48C0 21.5 21.5 0 48 0h204.1a48 48 0 0 1 33.9 14.1l211.9 211.9c18.7 18.7 18.7 49.1 0 67.9L293.8 497.9c-18.7 18.7-49.1 18.7-67.9 0L14.1 286.1A48 48 0 0 1 0 252.1zM112 64c-26.5 0-48 21.5-48 48s21.5 48 48 48 48-21.5 48-48-21.5-48-48-48z"></path>
@@ -381,7 +385,7 @@ const tagSettingsPopup = `
     </div>
     <div style="padding: 8px;">
       <input type="text" placeholder="enter new tag name" class="tagInput">
-      <div class="sortable-list" style="overflow: auto; max-height: 700px; min-height: 350px;">
+      <div class="sortable-list" style="overflow: auto; max-height: 700px; min-height: 200px;">
         <ul id="settingsTagList"></ul>
       </div>
     </div>
@@ -391,6 +395,9 @@ const tagSettingsPopupElement = document.createElement("div");
 tagSettingsPopupElement.classList.add("characterTagSettingsOverlay");
 tagSettingsPopupElement.innerHTML = tagSettingsPopup;
 document.body.appendChild(tagSettingsPopupElement);
+
+const characterTagSettingsPopup = tagSettingsPopupElement.querySelector(".characterTagSettingsPopup");
+characterTagSettingsPopup.style.maxHeight = `${ characterTagSettingsPopup.parentElement.clientHeight * 0.9 }px`;
 
 const background = tagSettingsPopupElement.querySelector(".characterTagSettingsBackground");
 const closeButton = tagSettingsPopupElement.querySelector(".characterTagSettingsButton");
@@ -463,6 +470,8 @@ const closePopup = () => {
 
 background.addEventListener("click", closePopup);
 closeButton.addEventListener("click", closePopup);
+
+settingsTagList.parentElement.style.maxHeight = `${ settingsTagList.parentElement.parentElement.clientHeight - settingsTagList.parentElement.getBoundingClientRect().top -8 }px`;
 
 // Populate the tag settings list
 tagSettingsPopulate();
@@ -594,7 +603,7 @@ if (isHidden && !isCharacterHidden) {
 function displayCharacterTagSelection(character) {
 const tagSelectionPopup = `
   <div class="characterTagSettingsBackground" style="opacity: 1; transition: opacity 225ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;"></div>
-  <div class="characterTagSettingsPopup" tabindex="-1" style="max-width: 50%; max-height: 900px; padding: 0px 16px;">
+  <div class="characterTagSettingsPopup" tabindex="-1" style="max-width: 80%; max-height: 900px; padding: 0px 16px;">
     <div class="characterTagSettingsHeader" style="padding: 16px; border-bottom: 1px solid rgb(162, 172, 178);">
       <svg height="1em" style="color: rgba(0, 0, 0, 0.54); margin-right: 5px; height: 35px; width: 35px;" viewBox="0 0 512 512">
         <path d="M0 252.1V48C0 21.5 21.5 0 48 0h204.1a48 48 0 0 1 33.9 14.1l211.9 211.9c18.7 18.7 18.7 49.1 0 67.9L293.8 497.9c-18.7 18.7-49.1 18.7-67.9 0L14.1 286.1A48 48 0 0 1 0 252.1zM112 64c-26.5 0-48 21.5-48 48s21.5 48 48 48 48-21.5 48-48-21.5-48-48-48z"></path>
@@ -605,7 +614,7 @@ const tagSelectionPopup = `
       </button>
     </div>
     <div style="padding: 8px;">
-      <div class="sortable-list" style="overflow: auto; max-height: 700px; min-height: 350px;">
+      <div class="sortable-list" style="overflow: auto; max-height: 700px; min-height: 200px;">
         <ul id="characterTagList"></ul>
       </div>
     </div>
@@ -616,6 +625,9 @@ const tagSelectionPopupElement = document.createElement("div");
 tagSelectionPopupElement.classList.add("characterTagSettingsOverlay");
 tagSelectionPopupElement.innerHTML = tagSelectionPopup;
 document.body.appendChild(tagSelectionPopupElement);
+
+const characterTagSettingsPopup = tagSelectionPopupElement.querySelector(".characterTagSettingsPopup");
+characterTagSettingsPopup.style.maxHeight = `${ characterTagSettingsPopup.parentElement.clientHeight * 0.9 }px`;
 
 const background = tagSelectionPopupElement.querySelector(".characterTagSettingsBackground");
 const closeButton = tagSelectionPopupElement.querySelector(".characterTagSettingsButton");
@@ -646,6 +658,8 @@ characterTagList.addEventListener("click", (event) => {
     tagSelectionPopupElement.remove();
   }
 });
+
+characterTagList.parentElement.style.maxHeight = `${ characterTagList.parentElement.parentElement.clientHeight - characterTagList.parentElement.getBoundingClientRect().top -8 }px`;
 
 tagSelectionPopulate(characterCurrentTag);
 }
@@ -869,7 +883,7 @@ const targetElement = document.querySelector("#sidebarTagList")
 
 // Set the max-height to a portion of the window height
 if (targetElement) {
-  targetElement.style.maxHeight = `${targetElement.parentElement.clientHeight - 320}px`;
+  targetElement.style.maxHeight = `${ targetElement.parentElement.clientHeight - document.querySelector("#sidebarTagList").getBoundingClientRect().top - 20 }px`;
 }
 }
 
